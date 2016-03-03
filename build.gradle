@@ -3,7 +3,7 @@ apply plugin: 'java'
 apply plugin: 'war'
 
 war {
-    archiveName 'lbyclds.war'
+    archiveName 'mongodb.war'
     webXml = file('src/web.xml')
 }
 
