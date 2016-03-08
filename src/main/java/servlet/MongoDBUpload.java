@@ -1,5 +1,5 @@
-import java.io.*;
 import java.io.InputStreamReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -19,10 +19,10 @@ public class MongoDBUpload extends HttpServlet
 	private MongoDBClient db = new MongoDBClient();
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    	
-    	PrintWriter out = response.getWriter();
+
     	String jsonString = "";
-    	boolean addStat = false;
+    	int result = 0;
+
     	try {
 			List<FileItem> items = new ServletFileUpload(new DiskFileItemFactory()).parseRequest(request);
 			for (FileItem item : items) {
@@ -31,7 +31,7 @@ public class MongoDBUpload extends HttpServlet
 					// item is the file (and not a field), read it in and add to List
 					Scanner scanner = new Scanner(new InputStreamReader(item.getInputStream(), "UTF-8"));
 
-					//converting uploaded file to json
+					//converting uploaded file to json string
 					while (scanner.hasNextLine()) 
 					{
 						String line = scanner.nextLine().trim();
@@ -42,13 +42,14 @@ public class MongoDBUpload extends HttpServlet
 					}
 					scanner.close();
 
-					addStat = db.addEntry(jsonString);
-					request.setAttribute("msg", "Entry Added!");
+					result = db.addEntry(jsonString);
+
+					request.setAttribute("msg", result+" Entry Added!");
 					break;
 				}
 			}
 			
-			request.setAttribute("result", db.getEntry());
+			request.setAttribute("result", db.getAll());
 			
 		} catch (Exception e) {
 			request.setAttribute("msg", e.getMessage());
